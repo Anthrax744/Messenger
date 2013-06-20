@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 import javax.swing.WindowConstants;
@@ -28,6 +29,8 @@ public class FrmChat extends javax.swing.JFrame {
 	private JEditorPane jEditorPane1;
 	private JEditorPane jEditorPane2;
 	private JButton jButton1;
+	private JScrollPane jScrollPane2;
+	private JScrollPane jScrollPane1;
 	private boolean newLine = false;
 	private ChatSocket chatSocket;
 	private String actLine = null;
@@ -47,17 +50,6 @@ public class FrmChat extends javax.swing.JFrame {
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			getContentPane().setLayout(null);
 			{
-				jEditorPane1 = new JEditorPane();
-				getContentPane().add(jEditorPane1);
-				jEditorPane1.setBounds(0, 0, 589, 185);
-				jEditorPane1.setEditable(false);
-			}
-			{
-				jEditorPane2 = new JEditorPane();
-				getContentPane().add(jEditorPane2);
-				jEditorPane2.setBounds(0, 197, 589, 162);
-			}
-			{
 				jButton1 = new JButton();
 				getContentPane().add(jButton1);
 				jButton1.setText("Send");
@@ -67,6 +59,29 @@ public class FrmChat extends javax.swing.JFrame {
 						jButton1ActionPerformed(evt);
 					}
 				});
+			}
+			{
+				jScrollPane1 = new JScrollPane();
+				getContentPane().add(jScrollPane1);
+				jScrollPane1.setBounds(0, 0, 589, 178);
+				{
+					jEditorPane1 = new JEditorPane();
+					jScrollPane1.setViewportView(jEditorPane1);
+					jEditorPane1.setBounds(0, 311, 589, 21);
+					jEditorPane1.setEditable(false);
+					jEditorPane1.setPreferredSize(new java.awt.Dimension(541, 160));
+				}
+			}
+			{
+				jScrollPane2 = new JScrollPane();
+				getContentPane().add(jScrollPane2);
+				jScrollPane2.setBounds(0, 198, 589, 159);
+				{
+					jEditorPane2 = new JEditorPane();
+					jScrollPane2.setViewportView(jEditorPane2);
+					jEditorPane2.setBounds(0, 344, 589, 15);
+					jEditorPane2.setPreferredSize(new java.awt.Dimension(551, 141));
+				}
 			}
 			pack();
 			this.setSize(605, 441);

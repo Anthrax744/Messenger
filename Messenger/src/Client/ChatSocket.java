@@ -62,7 +62,7 @@ public class ChatSocket extends Thread
 				while(true)
 				{
 					String actLine = frmChat.getLine();
-					Thread.sleep(1000);
+					Thread.sleep(200);
 					if(actLine != null)
 					{
 
