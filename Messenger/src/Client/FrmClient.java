@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import javax.swing.JList;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
@@ -30,6 +31,7 @@ public class FrmClient extends javax.swing.JFrame {
 	private static final long serialVersionUID = 1L;
 	private JScrollPane jScrollPane1;
 	private JList<String> jList1;
+	private DefaultListModel dlm = new DefaultListModel();
 	private Client client;
 
 	/**
@@ -40,24 +42,22 @@ public class FrmClient extends javax.swing.JFrame {
 	public FrmClient(String user) throws IOException {
 
 		super();
-		client = new Client(user);
+		client = new Client(user, this);
 		initGUI(user);
 	}
 
 	private void initGUI(String user) {
 		try {
 			this.setTitle(user);
-			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			getContentPane().setLayout(null);
 			this.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent evt) {
 					try {
 						thisWindowClosing(evt);
 					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -65,10 +65,8 @@ public class FrmClient extends javax.swing.JFrame {
 					try {
 						thisWindowOpened(evt);
 					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -108,7 +106,12 @@ public class FrmClient extends javax.swing.JFrame {
 
 	public void updateList(String[] list)
 	{
-		jList1.setListData(list);
+		for (int i = 0; i < list.length; i++) 
+		{
+			dlm.addElement(list[i]);
+		}
+		
+		jList1.setModel(dlm);
 	}
 	
 	private void thisWindowClosing(WindowEvent evt) throws UnknownHostException, IOException 
@@ -123,7 +126,13 @@ public class FrmClient extends javax.swing.JFrame {
 			client.connectToChatPartner(jList1.getSelectedValue());
 		}
 	}
-
+	
+	public void addUser(String username)
+	{
+		DefaultListModel listModel = (DefaultListModel) jList1.getModel();
+		listModel.addElement(username);
+		jList1.setModel(listModel);
+	}
 }
 
 

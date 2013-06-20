@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class CommandSocket extends Thread
 {
@@ -55,24 +56,27 @@ public class CommandSocket extends Thread
 					
 					break;
 				case "update":
-					String[] list = server.getUserNameList();
+					ArrayList<String> list = server.getUserNameList();
+					list.remove(userID);
 
-					bufWriter.write(list.length);
+					bufWriter.write(list.size());
 					bufWriter.flush();
 
-					for(int i = 0; i < list.length; i++)
+					for(int i = 0; i < list.size(); i++)
 					{
-						bufWriter.write(list[i]);
+						bufWriter.write(list.get(i));
 						bufWriter.newLine();
 						bufWriter.flush();
 					}
+					
+					server.clientJoined(userID);
 					break;
 				case "connectTo":
 					String requestedUser = bufReader.readLine();
 					int userID = bufReader.read();
 					
 					openChatSocket(userID, requestedUser);
-					server.getUserCommandSocket(requestedUser).writeStuff();
+					server.getUserCommandSocket(requestedUser).giveCommand("GetConnected");
 					
 				}		
 
@@ -85,14 +89,20 @@ public class CommandSocket extends Thread
 		}
 	}
 	
+	public void clientJoined(String username) throws IOException
+	{
+		giveCommand("new User");
+		giveCommand(username);
+	}
+	
 	private void openChatSocket(int userID, String requestedUser)
 	{
 		ChatSocket chatSocket = new ChatSocket(userID, requestedUser, server);
 	}
 	
-	private void writeStuff() throws IOException
+	private void giveCommand(String command) throws IOException
 	{
-		bufWriter.write("random Stuff");
+		bufWriter.write(command);
 		bufWriter.newLine();
 		bufWriter.flush();
 	}

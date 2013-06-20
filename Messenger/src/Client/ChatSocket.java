@@ -1,5 +1,6 @@
 package Client;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class ChatSocket extends Thread
 				while(true)
 				{
 					frmChat.addLine(chatReader.readLine());
+					Toolkit.getDefaultToolkit().beep();
 				}
 
 			}			

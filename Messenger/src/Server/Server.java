@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -46,13 +47,13 @@ public class Server extends Thread
 	}
 	
 	
-	public String[] getUserNameList()
+	public ArrayList<String> getUserNameList()
 	{
-		String[] nameList = new String[userList.size()];
+		ArrayList<String> nameList = new ArrayList<String>();
 		
 		for(int i = 0; i< userList.size(); i++)
 		{
-			nameList[i] = userList.get(i).getName();
+			nameList.add(userList.get(i).getName());
 		}
 		
 		return nameList;
@@ -128,6 +129,18 @@ public class Server extends Thread
 			}
 		}
 		return null;
+	}
+	
+	public void clientJoined(int userID) throws IOException
+	{
+		for(int i = 0; i < userList.size(); i++)
+		{
+			if(i != userID)
+			{
+				userList.get(i).getCommandSocket().clientJoined(userList.get(i).getName());
+			}
+		}
+		
 	}
 
 
