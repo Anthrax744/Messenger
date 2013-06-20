@@ -17,6 +17,7 @@ public class CommandSocket extends Thread
 	private Server server;
 	private int userID;
 
+	//In dieser neuen Instanz wird ein neuer Thread gestartet, da es beliebig viele CommandSockets geben können muss.
 	public CommandSocket(Socket socket, int userCount, Server server)
 	{
 		this.userID = userCount;
@@ -47,7 +48,7 @@ public class CommandSocket extends Thread
 				switch(command)
 				{
 				case "connect": 
-					server.addToList(new User(bufReader.readLine(), userID));
+					server.addToList(new User(bufReader.readLine(), userID, this));
 					
 					bufWriter.write(userID);
 					bufWriter.flush();
@@ -71,11 +72,14 @@ public class CommandSocket extends Thread
 					int userID = bufReader.read();
 					
 					openChatSocket(userID, requestedUser);
+					server.getUserCommandSocket(requestedUser).writeStuff();
+					
 				}		
 
 			}
 			catch (IOException e)
 			{
+				System.exit(0);
 				e.printStackTrace();
 			}
 		}
@@ -84,6 +88,13 @@ public class CommandSocket extends Thread
 	private void openChatSocket(int userID, String requestedUser)
 	{
 		ChatSocket chatSocket = new ChatSocket(userID, requestedUser, server);
+	}
+	
+	private void writeStuff() throws IOException
+	{
+		bufWriter.write("random Stuff");
+		bufWriter.newLine();
+		bufWriter.flush();
 	}
 
 }

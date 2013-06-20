@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 
 import Server.CommandSocket;
 
-public class Client
+public class Client extends Thread 
 {
 	private BufferedWriter commandWriter;
 	private BufferedReader commandReader;
@@ -23,7 +23,7 @@ public class Client
 	private Socket chatSocket;
 	private String user;
 	
-	public Client(String user) throws IOException
+	public Client(String user) throws IOException 
 	{
 		this.user = user;
 		openCommandSocket();
@@ -113,9 +113,30 @@ public class Client
 		commandWriter.flush();
 		
 		ChatSocket chatSocketClass = new ChatSocket(chatSocket);
+			
 		
-		
-		
+	}
+	
+	public void run()
+	{
+		while(true)
+		{
+			try 
+			{
+				commandReader.readLine();
+				new ChatSocket(chatSocket);
+				
+			} catch (IOException e) 
+			{
+				e.printStackTrace();
+			} 
+			
+		}
+	}
+	
+	public void startListening()
+	{
+		new Thread(this).start();
 	}
 	
 

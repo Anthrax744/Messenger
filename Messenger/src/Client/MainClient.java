@@ -6,14 +6,12 @@ public class MainClient
 {
 	public static void main(String[] args) throws IOException 
 	{
-//		FrmClient frmClient = new FrmClient("User 1");
-//		frmClient.setVisible(true);
-//		
-//		FrmClient frmClient2 = new FrmClient("User 2");
-//		frmClient2.setVisible(true);
+		FrmClient frmClient = new FrmClient("User 1");
+		frmClient.setVisible(true);
 		
-		FrmChat chat = new FrmChat();
-		chat.setVisible(true);
+		FrmClient frmClient2 = new FrmClient("User 2");
+		frmClient2.setVisible(true);
+		
 	}
 
 }

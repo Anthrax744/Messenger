@@ -52,8 +52,10 @@ public class ChatSocket extends Thread
 				InputStreamReader reader = new InputStreamReader(in); 
 				cUReader = new BufferedReader(reader);
 				
+				Thread.sleep(1000);
+				
 				while(true)
-				{
+				{		
 					rUWriter.write(cUReader.readLine());
 					rUWriter.newLine();
 					rUWriter.flush();
@@ -62,6 +64,9 @@ public class ChatSocket extends Thread
 			}
 			catch (IOException e)
 			{
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Automatisch generierter Erfassungsblock
 				e.printStackTrace();
 			}
 		}
@@ -79,8 +84,10 @@ public class ChatSocket extends Thread
 				InputStreamReader reader = new InputStreamReader(in); 
 				rUReader = new BufferedReader(reader);
 				
+				Thread.sleep(1000);
+				
 				while(true)
-				{
+				{					
 					cUWriter.write(rUReader.readLine());
 					cUWriter.newLine();
 					cUWriter.flush();
@@ -88,6 +95,9 @@ public class ChatSocket extends Thread
 			}
 			catch (IOException e)
 			{
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Automatisch generierter Erfassungsblock
 				e.printStackTrace();
 			}
 		}

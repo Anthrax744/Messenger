@@ -102,7 +102,8 @@ public class FrmClient extends javax.swing.JFrame {
 
 	private void thisWindowOpened(WindowEvent evt) throws UnknownHostException, IOException 
 	{
-		updateList(client.updateUsers());		
+		updateList(client.updateUsers());	
+		client.startListening();
 	}
 
 	public void updateList(String[] list)
@@ -120,8 +121,6 @@ public class FrmClient extends javax.swing.JFrame {
 		if(evt.getClickCount() == 2)
 		{
 			client.connectToChatPartner(jList1.getSelectedValue());
-			FrmChat frmChat = new FrmChat();
-			frmChat.setVisible(true);
 		}
 	}
 

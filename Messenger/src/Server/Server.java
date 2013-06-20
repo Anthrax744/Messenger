@@ -21,15 +21,17 @@ public class Server extends Thread
 	private int userCount = 0;
 
 
+	//Wenn der Server gestartet wird,
 	public Server() throws IOException
 	{
+		//Wird ein Thread für die CommandSocket erstellt
 		commandServerSocket = new ServerSocket(9090);
 		
 		Thread commandThread = new Thread(this);
 		commandThread.setName("command");
 		commandThread.start();		
 		
-		
+		//und ein Thread für die Chat Socket.
 		chatServerSocket = new ServerSocket(2020);
 		
 		Thread chatThread = new Thread(this);
@@ -65,7 +67,10 @@ public class Server extends Thread
 			{
 				while(true)
 				{
-					commandSocket = commandServerSocket.accept();					
+					//Wenn eine Verbindung auf die CommandSocket ankommt,
+					commandSocket = commandServerSocket.accept();	
+					
+					//Wird eine neue Instanz der Klasse CommandSocket erstellt.
 					CommandSocket commandClass = new CommandSocket(commandSocket, userCount, this);
 					userCount++;
 				}
@@ -111,6 +116,18 @@ public class Server extends Thread
 	public Socket getUserSocket(int userID)
 	{
 		return userList.get(userID).getSocket();
+	}
+	
+	public CommandSocket getUserCommandSocket(String username)
+	{
+		for(User u : userList)
+		{
+			if(u.getName().equals(username))
+			{
+				return u.getCommandSocket();
+			}
+		}
+		return null;
 	}
 
 
