@@ -35,5 +35,10 @@ public class User
 	{
 		return commandSocket;
 	}
+	
+	public int getID()
+	{
+		return userID;
+	}
 
 }

@@ -18,18 +18,20 @@ public class CommandSocket extends Thread
 	private Server server;
 	private int userID;
 
+	private boolean connected = true;
+
 	//In dieser neuen Instanz wird ein neuer Thread gestartet, da es beliebig viele CommandSockets geben können muss.
-	public CommandSocket(Socket socket, int userCount, Server server)
+	public CommandSocket(Socket socket, int userID, Server server)
 	{
-		this.userID = userCount;
 		this.clientCommandSocket = socket;
+		this.userID = userID;		
 		this.server = server;
 		new Thread(this).start();
 	}
 
 	public void run()
 	{
-		while(true)
+		while(connected)
 		{
 			try
 			{
@@ -48,63 +50,76 @@ public class CommandSocket extends Thread
 
 				switch(command)
 				{
-				case "connect": 
-					server.addToList(new User(bufReader.readLine(), userID, this));
-					
-					bufWriter.write(userID);
-					bufWriter.flush();
-					
-					break;
-				case "update":
-					ArrayList<String> list = server.getUserNameList();
-					list.remove(userID);
-
-					bufWriter.write(list.size());
-					bufWriter.flush();
-
-					for(int i = 0; i < list.size(); i++)
+				//Wenn der Befehlt "login" kommt
+				case "login": 
+					synchronized(this) //Solange ein User dabei ist sich einzuloggen, darf kein anderer sich einloggen.
 					{
-						bufWriter.write(list.get(i));
-						bufWriter.newLine();
+						//Wird der username empfangen
+						String username = bufReader.readLine();
+						//und ein neuer User mit diesem Namen und der ClientID angelegt.
+						User u = new User(username, userID, this);
+
+						//Dem User wird dann seine ID mitgeteilt.			
+						bufWriter.write(userID);
 						bufWriter.flush();
+						
+						//Er bekommt eine Liste aller eingeloggten User
+						ArrayList<String> UserList = server.getUserNameList();
+						bufWriter.write(UserList.size());
+						bufWriter.flush();
+
+						for(int i = 0; i < UserList.size(); i++)
+						{
+							bufWriter.write(UserList.get(i));
+							bufWriter.newLine();
+							bufWriter.flush();
+						}
+						
+						//Und wird danach selbst zu dieser Liste hinzugefügt.
+						server.addToList(u);
+						
+						//Anschließend sender der User"startedListening" um sicherzugehen, dass zukünftige Befehle auch ankommen.
+						bufReader.readLine(); 
+						
+						//Die anderen User werden über den neuen User benachrichtigt.
+						server.userLoggedIn(userID, username);
+						break;
 					}
-					
-					server.clientJoined(userID);
-					break;
 				case "connectTo":
 					String requestedUser = bufReader.readLine();
 					int userID = bufReader.read();
-					
+
 					openChatSocket(userID, requestedUser);
 					server.getUserCommandSocket(requestedUser).giveCommand("GetConnected");
-					
+
 				}		
 
 			}
 			catch (IOException e)
 			{
-				System.exit(0);
+				connected = false;
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	public void clientJoined(String username) throws IOException
+
+	public void userJoined(String username) throws IOException
 	{
 		giveCommand("new User");
 		giveCommand(username);
 	}
-	
+
 	private void openChatSocket(int userID, String requestedUser)
 	{
 		ChatSocket chatSocket = new ChatSocket(userID, requestedUser, server);
 	}
-	
+
 	private void giveCommand(String command) throws IOException
 	{
 		bufWriter.write(command);
 		bufWriter.newLine();
 		bufWriter.flush();
 	}
+
 
 }

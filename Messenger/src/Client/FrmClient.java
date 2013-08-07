@@ -31,59 +31,39 @@ public class FrmClient extends javax.swing.JFrame {
 	private static final long serialVersionUID = 1L;
 	private JScrollPane jScrollPane1;
 	private JList<String> jList1;
-	private DefaultListModel dlm = new DefaultListModel();
+	private DefaultListModel<String> dlm = new DefaultListModel<String>();
 	private Client client;
 
 	/**
-	 * Auto-generated main method to display this JFrame
+	 * Erzeugt einen neuen Client und erzeugt die grafische Oberfläche
 	 * @throws IOException 
 	 */
 
-	public FrmClient(String user) throws IOException {
+	public FrmClient(String username) throws IOException {
 
 		super();
-		client = new Client(user, this);
-		initGUI(user);
+		initGUI(username);
+		
+		client = new Client(username, this);
 	}
 
-	private void initGUI(String user) {
+	private void initGUI(String username) {
 		try {
-			this.setTitle(user);
-			setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			this.setTitle(username);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			getContentPane().setLayout(null);
-			this.addWindowListener(new WindowAdapter() {
-				public void windowClosing(WindowEvent evt) {
-					try {
-						thisWindowClosing(evt);
-					} catch (UnknownHostException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				public void windowOpened(WindowEvent evt) {
-					try {
-						thisWindowOpened(evt);
-					} catch (UnknownHostException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
 			{
 				jScrollPane1 = new JScrollPane();
 				getContentPane().add(jScrollPane1);
 				jScrollPane1.setBounds(299, 22, 245, 272);
 				{
-					jList1 = new JList<String>();
+					jList1 = new JList<String>(dlm);
 					jScrollPane1.setViewportView(jList1);
 					jList1.addMouseListener(new MouseAdapter() {
 						public void mouseClicked(MouseEvent evt) {
 							try {
 								jList1MouseClicked(evt);
 							} catch (IOException e) {
-								// TODO Automatisch generierter Erfassungsblock
 								e.printStackTrace();
 							}
 						}
@@ -98,12 +78,6 @@ public class FrmClient extends javax.swing.JFrame {
 		}
 	}
 
-	private void thisWindowOpened(WindowEvent evt) throws UnknownHostException, IOException 
-	{
-		updateList(client.updateUsers());	
-		client.startListening();
-	}
-
 	public void updateList(String[] list)
 	{
 		for (int i = 0; i < list.length; i++) 
@@ -112,11 +86,6 @@ public class FrmClient extends javax.swing.JFrame {
 		}
 		
 		jList1.setModel(dlm);
-	}
-	
-	private void thisWindowClosing(WindowEvent evt) throws UnknownHostException, IOException 
-	{
-		
 	}
 	
 	private void jList1MouseClicked(MouseEvent evt) throws IOException 
@@ -129,7 +98,7 @@ public class FrmClient extends javax.swing.JFrame {
 	
 	public void addUser(String username)
 	{
-		DefaultListModel listModel = (DefaultListModel) jList1.getModel();
+		DefaultListModel<String> listModel = (DefaultListModel<String>) jList1.getModel();
 		listModel.addElement(username);
 		jList1.setModel(listModel);
 	}

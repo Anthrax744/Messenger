@@ -19,7 +19,7 @@ public class Server extends Thread
 	private BufferedReader bufReader;
 
 	private ArrayList<User> userList= new ArrayList<User>();
-	private int userCount = 0;
+	private int userID = 0;
 
 
 	//Wenn der Server gestartet wird,
@@ -69,11 +69,11 @@ public class Server extends Thread
 				while(true)
 				{
 					//Wenn eine Verbindung auf die CommandSocket ankommt,
-					commandSocket = commandServerSocket.accept();	
+					Socket commandSocket = commandServerSocket.accept();	
 					
 					//Wird eine neue Instanz der Klasse CommandSocket erstellt.
-					CommandSocket commandClass = new CommandSocket(commandSocket, userCount, this);
-					userCount++;
+					CommandSocket commandClass = new CommandSocket(commandSocket, userID, this);
+					userID++;
 				}
 
 			}			
@@ -130,17 +130,17 @@ public class Server extends Thread
 		}
 		return null;
 	}
+
 	
-	public void clientJoined(int userID) throws IOException
+	public void userLoggedIn(int userID, String username) throws IOException
 	{
-		for(int i = 0; i < userList.size(); i++)
+		for(User u : userList)
 		{
-			if(i != userID)
+			if(u.getID() != userID)
 			{
-				userList.get(i).getCommandSocket().clientJoined(userList.get(i).getName());
+				u.getCommandSocket().userJoined(username);
 			}
 		}
-		
 	}
 
 

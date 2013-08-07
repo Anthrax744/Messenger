@@ -14,63 +14,41 @@ import Server.CommandSocket;
 
 public class Client extends Thread 
 {
+	private String username; //PC-Name/IP. Wird später automatisch zugewiesen.
+	private FrmClient frmClient; //Übergeben zum Methodenaufruf.
+	private int clientID;
+
 	private BufferedWriter commandWriter;
 	private BufferedReader commandReader;
 	private BufferedWriter chatWriter;
 	private BufferedReader chatReader;
-	private int clientID;
+
 	private Socket commandSocket;
 	private Socket chatSocket;
-	private String user;
-	private FrmClient frmClient;
 
-	public Client(String user, FrmClient frmClient) throws IOException 
+
+
+	/**
+	 * Öffnet als erstes die CommandSocket und sendet den Befehlt "connect". Öffnet anschließend die ChatSocket.
+	 * @param user
+	 * @param frmClient
+	 * @throws IOException
+	 */
+	public Client(String username, FrmClient frmClient) throws IOException 
 	{
-		this.user = user;
+		this.username = username;
 		this.frmClient = frmClient;
-		openCommandSocket();
-		connect();
-		openChatSocket();
+
+		openCommandSocket(); //zuerst muss die Verbindug zum Server über die CommandSocket aufgebaut werden. Anschließend können Befehle gesendet werden.
+		logIn();			//Nun "loggt" sich der User auf dem Server ein und empfängt seine ID
+
+
+		//		openChatSocket();
 	}
-
-
-
-	public void connect() throws UnknownHostException, IOException
-	{
-		commandWriter.write("connect");
-		commandWriter.newLine();
-		commandWriter.flush();
-
-		commandWriter.write(user);
-		commandWriter.newLine();
-		commandWriter.flush();
-
-		clientID = commandReader.read();
-	}
-
-
-	public String[] updateUsers() throws UnknownHostException, IOException
-	{				
-		commandWriter.write("update");
-		commandWriter.newLine();
-		commandWriter.flush();
-
-
-		int nameCount = commandReader.read();
-		String[] list = new String[nameCount];
-
-		for(int i = 0; i<nameCount; i++)
-		{
-			list[i] = commandReader.readLine();
-		}
-
-		return list;
-	}
-
 
 	public void openCommandSocket() throws IOException
 	{
-		commandSocket = new Socket("Clemens-Laptop.fritz.box", 9090);
+		commandSocket = new Socket("localhost", 9090); //Statt localhost später evt. Clemens-Laptop.fritz.box
 
 		//Writer erstellen
 		OutputStream out = commandSocket.getOutputStream(); 
@@ -83,6 +61,82 @@ public class Client extends Thread
 		commandReader = new BufferedReader(reader);	
 	}
 
+	public void logIn() throws UnknownHostException, IOException
+	{
+		//Zuerst wird der Befehl "login" gesendet.
+		commandWriter.write("login");
+		commandWriter.newLine();
+		commandWriter.flush();
+
+		//Anschließend wird der Username übergeben
+		commandWriter.write(username);
+		commandWriter.newLine();
+		commandWriter.flush();
+
+		//Und die zugewiesene ID wird empfangen.
+		clientID = commandReader.read();
+		
+		int nameCount = commandReader.read();
+		String[] list = new String[nameCount];
+
+		for(int i = 0; i<nameCount; i++)
+		{
+			list[i] = commandReader.readLine();
+		}
+		
+		frmClient.updateList(list);
+		
+		
+		startListening();
+
+		commandWriter.write("startedListening");
+		commandWriter.newLine();
+		commandWriter.flush();
+	}
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * Verbindet sich mit dem ChatServer und gibt die Client ID durch.
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	public void openChatSocket() throws UnknownHostException, IOException
 	{
 		chatSocket = new Socket("Clemens-Laptop.fritz.box", 2020);
@@ -133,8 +187,7 @@ public class Client extends Thread
 				openChatSocket();
 				break;
 				case "new User": frmClient.addUser(commandReader.readLine());
-					break;
-
+				break;
 				}
 
 
